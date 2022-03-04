@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"io/ioutil"
 )
 
 type VerifiServer interface {
@@ -22,4 +23,8 @@ func NewServer(logger *zap.SugaredLogger) VerifiServer {
 func (s Server) FormSubmittedWebhook(c *gin.Context) {
 	s.logger.Infow("Received Form Submission")
 	c.JSON(200, gin.H{"message": "form sent to server"})
+
+
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	s.logger.Debugw("printing body", "body", body)
 }
