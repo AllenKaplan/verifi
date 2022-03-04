@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"net/http"
 	"time"
 )
 
@@ -22,7 +23,6 @@ func NewServer(logger *zap.SugaredLogger) VerifiServer {
 
 func (s Server) FormSubmittedWebhook(c *gin.Context) {
 	s.logger.Infow("Received Form Submission")
-	c.JSON(200, gin.H{"message": "form sent to server"})
 
 	type Request struct {
 		FormId       string    `json:"form_id"`
@@ -41,7 +41,12 @@ func (s Server) FormSubmittedWebhook(c *gin.Context) {
 	}
 
 	var request Request
-	c.Bind(&request)
+	if err := c.Bind(&request); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
-	s.logger.Debugw("parsed request", "request", request)
+	s.logger.Debugw("Form Submission Request Parsed", "request", request)
+
+	c.Status(http.StatusOK)
 }
