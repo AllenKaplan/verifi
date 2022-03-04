@@ -10,7 +10,7 @@ import (
 
 func main() {
 	c := config{
-		url:  "localhost",
+		url:  "",
 		port: "8080",
 	}
 
